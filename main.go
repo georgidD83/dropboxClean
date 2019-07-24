@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	token = "-e2kZ4ViybAAAAAAAAAL2VaU2GHPfTciP60B56RJgvEVxzK2G9X5bR5Tg1reyvHp"
+	token = ""
 )
 
 func main() {
