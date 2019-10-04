@@ -1,23 +1,66 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox"
-	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox/users"
+	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox/files"
 )
 
 var (
-	token = ""
+	token = "-e2kZ4ViybAAAAAAAAAXjLDOIlquPemHFeH2pUMnPfxoKfrJT9ttZEvE53uEz1rx"
 )
 
 func main() {
 	config := dropbox.Config{
-		Token:    token,
-		LogLevel: dropbox.LogInfo, // if needed, set the desired logging level. Default is off
+		Token: token,
 	}
-	dbx := users.New(config)
-	// start making API calls
+	dbx := files.New(config)
 
-	fmt.Printf("%+v\n", dbx)
+	dropboxclean.GetMetadata(dbx)
+
+	arg := &files.ListFolderArg{
+		Path:      "/Apps/Netatmo",
+		Recursive: true,
+	}
+	resp, err := dbx.ListFolder(arg)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	// os.Stdout.Write(b)
+
+	data := new(metadata)
+	err = json.Unmarshal(b, &data)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	// fmt.Printf("%+v\n", data)
+
+	if data.HasMore == false {
+		return
+	}
+	arg := &files.ListFolderContinueArg{
+		Cursor: data.Cursor,
+	}
+	resp, err := dbx.ListFolderContinue(arg)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	b, err := json.Marshal(resp)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	// os.Stdout.Write(b)
+	err = json.Unmarshal(b, &data)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	fmt.Printf("%+v\n", data)
 }
