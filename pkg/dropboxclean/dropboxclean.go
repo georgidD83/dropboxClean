@@ -21,7 +21,7 @@ type Metadata struct {
 }
 
 // GetMetadata returns all metadata for the Dropbox account file system.
-func GetMetadata(client files.Client) *Metadata {
+func GetMetadata(dbx files.Client) (*Metadata, error) {
 	root := &files.ListFolderArg{
 		Path:      "/Apps/Netatmo",
 		Recursive: true,
@@ -29,18 +29,20 @@ func GetMetadata(client files.Client) *Metadata {
 	resp, err := dbx.ListFolder(root)
 	if err != nil {
 		log.Printf("%v\n", err)
+		return nil, err
 	}
-
-	b, err := json.Marshal(resp)
-	if err != nil {
-		log.Printf("%v\n", err)
-	}
-	// os.Stdout.Write(b)
-
-	data := new(metadata)
-	err = json.Unmarshal(b, &data)
-	if err != nil {
-		log.Printf("%v\n", err)
+	if resp.HasMore == false {
+		b, err := json.Marshal(resp)
+		if err != nil {
+			log.Printf("%v\n", err)
+			return nil, err
+		}
+		data := new(Metadata)
+		err = json.Unmarshal(b, &data)
+		if err != nil {
+			log.Printf("%v\n", err)
+			return nil, err
+		}
 	}
 	// fmt.Printf("%+v\n", data)
 }

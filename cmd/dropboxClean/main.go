@@ -7,10 +7,11 @@ import (
 
 	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox"
 	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox/files"
+	"github.com/georgidD83/dropboxClean/pkg/dropboxclean"
 )
 
 var (
-	token = "-e2kZ4ViybAAAAAAAAAXjLDOIlquPemHFeH2pUMnPfxoKfrJT9ttZEvE53uEz1rx"
+	token = ""
 )
 
 func main() {
